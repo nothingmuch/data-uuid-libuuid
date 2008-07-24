@@ -29,15 +29,15 @@ STATIC void new_uuid (int version, uuid_t uuid) {
 
 /* hex or binary sv to uuid_t */
 STATIC int sv_to_uuid (SV *sv, uuid_t uuid) {
-    if ( SvPOK(sv) || SvROK(sv) && SvSTASH(sv) ) {
+    if ( SvPOK(sv) || sv_isobject(sv) ) {
         char *pv;
         STRLEN len;
 
-        if ( SvROK(sv) ) {
-            pv = SvPV(sv, len);
-        } else {
-            pv = SvPV_nomg(sv, PL_na);
+        if ( SvPOK(sv) ) {
+            pv = SvPV_nolen(sv);
             len = SvCUR(sv);
+        } else {
+            pv = SvPV(sv, len);
         }
 
         switch ( len ) {
