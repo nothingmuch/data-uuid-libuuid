@@ -6,7 +6,7 @@ use strict;
 
 use vars qw($VERSION @ISA);
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use Sub::Exporter -setup => {
     exports => [qw(
