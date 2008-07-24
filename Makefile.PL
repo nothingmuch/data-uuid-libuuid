@@ -4,7 +4,7 @@ use strict;
 
 use ExtUtils::MakeMaker;
 
-WriteMakefile(
+my $conf = WriteMakefile(
 	NAME         => 'Data::UUID::LibUUID',
 	VERSION_FROM => 'lib/Data/UUID/LibUUID.pm',
 	INSTALLDIRS  => 'site',
@@ -18,3 +18,9 @@ WriteMakefile(
 	},
 );
 
+if ( system(join " ", $conf->{CC}, '-c', $conf->{CCFLAGS}, $conf->{INC} || '', "hdr_check.h") != 0 ) {
+    warn "<uuid/uuid.h> seems to be missing, please install e2fsprogs' "
+       . "libuuid, or uuid-dev on debian based linux distributions\n";
+
+    exit 1;
+}
