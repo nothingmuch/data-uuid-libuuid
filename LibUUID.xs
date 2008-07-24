@@ -20,17 +20,17 @@ typedef char uuid_str_buf[UUID_STRING_SIZE + 1];
 
 /* generates a new UUID of a given version */
 STATIC void new_uuid (int version, uuid_t uuid) {
-	switch (version) {
-		case UUID_TYPE_TIME:
-			uuid_generate_time(uuid);
-			break;
-		case UUID_TYPE_RANDOM:
-			uuid_generate_random(uuid);
-			break;
-		case UUID_TYPE_DCE:
-		default:
-			uuid_generate(uuid);
-	}
+    switch (version) {
+        case UUID_TYPE_TIME:
+            uuid_generate_time(uuid);
+            break;
+        case UUID_TYPE_RANDOM:
+            uuid_generate_random(uuid);
+            break;
+        case UUID_TYPE_DCE:
+        default:
+            uuid_generate(uuid);
+    }
 }
 
 /* hex or binary sv to uuid_t */
@@ -56,107 +56,100 @@ STATIC int sv_to_uuid (SV *sv, uuid_t uuid) {
         }
     }
 
-	return 0;
+    return 0;
 }
 
 
-MODULE = Data::UUID::LibUUID			PACKAGE = Data::UUID::LibUUID
+MODULE = Data::UUID::LibUUID            PACKAGE = Data::UUID::LibUUID
 PROTOTYPES: ENABLE
 
 SV*
 uuid_eq(uu1_sv, uu2_sv)
     SV *uu1_sv;
     SV *uu2_sv;
-	PROTOTYPE: $$
-	PREINIT:
-		uuid_t uu1;
+    PROTOTYPE: $$
+    PREINIT:
+        uuid_t uu1;
         uuid_t uu2;
-	CODE:
-		if ( sv_to_uuid(uu1_sv, uu1) && sv_to_uuid(uu2_sv, uu2) )
-			RETVAL = ( uuid_compare(uu1, uu2) == 0 ? &PL_sv_yes : &PL_sv_no );
+    CODE:
+        if ( sv_to_uuid(uu1_sv, uu1) && sv_to_uuid(uu2_sv, uu2) )
+            RETVAL = ( uuid_compare(uu1, uu2) == 0 ? &PL_sv_yes : &PL_sv_no );
         else
-			RETVAL = &PL_sv_undef;
-	OUTPUT:
-		RETVAL
-
+            RETVAL = &PL_sv_undef;
+    OUTPUT: RETVAL
 
 SV*
 uuid_compare(uu1_sv, uu2_sv)
     SV *uu1_sv;
     SV *uu2_sv;
-	PROTOTYPE: $$
-	PREINIT:
-		uuid_t uu1;
+    PROTOTYPE: $$
+    PREINIT:
+        uuid_t uu1;
         uuid_t uu2;
-	CODE:
-		if ( sv_to_uuid(uu1_sv, uu1) && sv_to_uuid(uu2_sv, uu2) )
-			RETVAL = newSViv(uuid_compare(uu1, uu2));
+    CODE:
+        if ( sv_to_uuid(uu1_sv, uu1) && sv_to_uuid(uu2_sv, uu2) )
+            RETVAL = newSViv(uuid_compare(uu1, uu2));
         else
-			RETVAL = &PL_sv_undef;
-	OUTPUT:
-		RETVAL
+            RETVAL = &PL_sv_undef;
+    OUTPUT: RETVAL
 
 SV*
 new_uuid_binary(...)
-	PROTOTYPE: ;$
-	PREINIT:
-		uuid_t uuid;
-		int version = UUID_TYPE_DCE;
-	CODE:
-		if ( items == 1 ) version = SvIV(ST(0));
+    PROTOTYPE: ;$
+    PREINIT:
+        uuid_t uuid;
+        int version = UUID_TYPE_DCE;
+    CODE:
+        if ( items == 1 ) version = SvIV(ST(0));
 
-		new_uuid(version, uuid);
+        new_uuid(version, uuid);
 
-		RETVAL = newSVpvn((char *)uuid, sizeof(uuid));
-	OUTPUT:
-		RETVAL
+        RETVAL = newSVpvn((char *)uuid, sizeof(uuid));
+    OUTPUT: RETVAL
 
 SV*
 new_uuid_string(...)
-	PROTOTYPE: ;$
-	PREINIT:
-		uuid_t uuid;
-		int version = UUID_TYPE_DCE;
-		char buf[UUID_STRING_SIZE];
-	CODE:
-		if ( items == 1 ) version = SvIV(ST(0));
+    PROTOTYPE: ;$
+    PREINIT:
+        uuid_t uuid;
+        int version = UUID_TYPE_DCE;
+        char buf[UUID_STRING_SIZE];
+    CODE:
+        if ( items == 1 ) version = SvIV(ST(0));
 
-		new_uuid(version, uuid);
-		uuid_unparse(uuid, buf);
+        new_uuid(version, uuid);
+        uuid_unparse(uuid, buf);
 
-		RETVAL = newSVpvn(buf, UUID_STRING_SIZE);
-	OUTPUT:
-		RETVAL
+        RETVAL = newSVpvn(buf, UUID_STRING_SIZE);
+    OUTPUT: RETVAL
 
 SV*
 uuid_to_string(bin)
-	SV *bin
-	PROTOTYPE: $
-	PREINIT:
-		uuid_t uuid;
-		uuid_str_buf buf;
-	CODE:
-		if ( sv_to_uuid(bin, uuid) ) {
-			uuid_unparse(uuid, buf);
-			RETVAL = newSVpvn(buf, UUID_STRING_SIZE);
-		} else
-			RETVAL = &PL_sv_undef;
-	OUTPUT:
-		RETVAL
+    SV *bin
+    PROTOTYPE: $
+    PREINIT:
+        uuid_t uuid;
+        uuid_str_buf buf;
+    CODE:
+        if ( sv_to_uuid(bin, uuid) ) {
+            uuid_unparse(uuid, buf);
+            RETVAL = newSVpvn(buf, UUID_STRING_SIZE);
+        } else
+            RETVAL = &PL_sv_undef;
+    OUTPUT: RETVAL
 
 SV*
 uuid_to_binary(str)
-	SV *str
-	PROTOTYPE: $
-	PREINIT:
-		uuid_t uuid;
-	CODE:
+    SV *str
+    PROTOTYPE: $
+    PREINIT:
+        uuid_t uuid;
+    CODE:
         if ( sv_to_uuid(str, uuid) )
-			RETVAL = newSVpvn((char *)uuid, sizeof(uuid));
-		else
+            RETVAL = newSVpvn((char *)uuid, sizeof(uuid));
+        else
             RETVAL = &PL_sv_undef;
-	OUTPUT:
-		RETVAL
+    OUTPUT: RETVAL
 
 SV*
 new_dce_uuid_binary(...)
@@ -164,9 +157,8 @@ new_dce_uuid_binary(...)
         uuid_t uuid;
     CODE:
         uuid_generate(uuid);
-		RETVAL = newSVpvn((char *)uuid, sizeof(uuid));
-    OUTPUT:
-        RETVAL
+        RETVAL = newSVpvn((char *)uuid, sizeof(uuid));
+    OUTPUT: RETVAL
 
 SV*
 new_dce_uuid_string(...)
@@ -175,9 +167,8 @@ new_dce_uuid_string(...)
         uuid_str_buf buf;
     CODE:
         uuid_generate(uuid);
-		uuid_unparse(uuid, buf);
-		RETVAL = newSVpvn(buf, UUID_STRING_SIZE);
-    OUTPUT:
-        RETVAL
+        uuid_unparse(uuid, buf);
+        RETVAL = newSVpvn(buf, UUID_STRING_SIZE);
+    OUTPUT: RETVAL
 
 
