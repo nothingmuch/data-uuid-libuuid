@@ -7,7 +7,13 @@
 
 #include <uuid/uuid.h>
 
+#define UUID_TYPE_DCE 2
+#define UUID_TYPE_TIME 1
+#define UUID_TYPE_RANDOM 4
+
 #define UUID_STRING_SIZE 36
+
+typedef char uuid_str_buf[UUID_STRING_SIZE + 1];
 
 /* FIXME uuid_time, uuid_type, uuid_variant are available in libuuid but not in
  * darwin's uuid.h... consider exposing? */
@@ -15,13 +21,13 @@
 /* generates a new UUID of a given version */
 STATIC void new_uuid (int version, uuid_t uuid) {
 	switch (version) {
-		case 1:
+		case UUID_TYPE_TIME:
 			uuid_generate_time(uuid);
 			break;
-		case 4:
+		case UUID_TYPE_RANDOM:
 			uuid_generate_random(uuid);
 			break;
-		case 2:
+		case UUID_TYPE_DCE:
 		default:
 			uuid_generate(uuid);
 	}
@@ -95,7 +101,7 @@ new_uuid_binary(...)
 	PROTOTYPE: ;$
 	PREINIT:
 		uuid_t uuid;
-		int version = 2; /* DCE */
+		int version = UUID_TYPE_DCE;
 	CODE:
 		if ( items == 1 ) version = SvIV(ST(0));
 
@@ -110,8 +116,8 @@ new_uuid_string(...)
 	PROTOTYPE: ;$
 	PREINIT:
 		uuid_t uuid;
-		int version = 2; /* DCE */
-		char buf[37];
+		int version = UUID_TYPE_DCE;
+		char buf[UUID_STRING_SIZE];
 	CODE:
 		if ( items == 1 ) version = SvIV(ST(0));
 
@@ -128,7 +134,7 @@ uuid_to_string(bin)
 	PROTOTYPE: $
 	PREINIT:
 		uuid_t uuid;
-		char buf[37];
+		uuid_str_buf buf;
 	CODE:
 		if ( sv_to_uuid(bin, uuid) ) {
 			uuid_unparse(uuid, buf);
