@@ -15,6 +15,8 @@ use Sub::Exporter -setup => {
         uuid_to_binary uuid_to_string
         
         uuid_eq uuid_compare
+
+        new_dce_uuid_string new_dce_uuid_binary
     )],
     groups => {
         default => [qw(new_uuid_string new_uuid_binary uuid_eq)],

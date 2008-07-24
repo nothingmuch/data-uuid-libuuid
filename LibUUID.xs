@@ -151,3 +151,27 @@ uuid_to_binary(str)
             RETVAL = &PL_sv_undef;
 	OUTPUT:
 		RETVAL
+
+SV*
+new_dce_uuid_binary(...)
+    PREINIT:
+        uuid_t uuid;
+    CODE:
+        uuid_generate(uuid);
+		RETVAL = newSVpvn((char *)uuid, sizeof(uuid));
+    OUTPUT:
+        RETVAL
+
+SV*
+new_dce_uuid_string(...)
+    PREINIT:
+        uuid_t uuid;
+        uuid_str_buf buf;
+    CODE:
+        uuid_generate(uuid);
+		uuid_unparse(uuid, buf);
+		RETVAL = newSVpvn(buf, UUID_STRING_SIZE);
+    OUTPUT:
+        RETVAL
+
+

@@ -69,3 +69,5 @@ is( uuid_to_binary(*STDOUT), undef, "to_binary(*STDOUT)" );
 is( uuid_to_binary(sub { }), undef, "to_binary(sub { })" );
 is( uuid_to_binary(42), undef, "to_binary(IV)" );
 
+is( length(new_dce_uuid_string()), 36, 'new_dce_uuid_string ignores its args' );
+is( length(new_dce_uuid_string( bless({}, "Foo"), "foo" )), 36, 'new_dce_uuid_string ignores its args' );
