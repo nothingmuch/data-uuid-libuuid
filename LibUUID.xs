@@ -19,7 +19,7 @@ typedef char uuid_str_buf[UUID_STRING_SIZE + 1];
  * darwin's uuid.h... consider exposing? */
 
 /* generates a new UUID of a given version */
-STATIC void new_uuid (int version, uuid_t uuid) {
+STATIC void new_uuid (IV version, uuid_t uuid) {
     switch (version) {
         case UUID_TYPE_TIME:
             uuid_generate_time(uuid);
@@ -34,7 +34,7 @@ STATIC void new_uuid (int version, uuid_t uuid) {
 }
 
 /* hex or binary sv to uuid_t */
-STATIC int sv_to_uuid (SV *sv, uuid_t uuid) {
+STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
     if ( SvPOK(sv) || sv_isobject(sv) ) {
         char *pv;
         STRLEN len;
@@ -99,7 +99,7 @@ new_uuid_binary(...)
     PROTOTYPE: ;$
     PREINIT:
         uuid_t uuid;
-        int version = UUID_TYPE_DCE;
+        IV version = UUID_TYPE_DCE;
     CODE:
         if ( items == 1 ) version = SvIV(ST(0));
 
@@ -112,7 +112,7 @@ new_uuid_string(...)
     PROTOTYPE: ;$
     PREINIT:
         uuid_t uuid;
-        int version = UUID_TYPE_DCE;
+        IV version = UUID_TYPE_DCE;
         uuid_str_buf buf;
     CODE:
         if ( items == 1 ) version = SvIV(ST(0));
