@@ -42,3 +42,6 @@
 
 # XS shit
 \.(?:bs|c|o)$
+
+# compiled header
+\.gch$
