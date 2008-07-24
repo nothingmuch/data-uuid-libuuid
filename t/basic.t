@@ -63,5 +63,9 @@ ok( uuid_eq($str, $obj), "uuid_eq on stringifying object" );
 is( uuid_to_binary("foo"), undef, "to_binary(random_string)" );
 is( uuid_to_string("foo"), undef, "to_string(random_string)" );
 is( uuid_to_binary(undef), undef, "to_binary(undef)" );
+is( uuid_to_binary({}), undef, "to_binary({})" );
+is( uuid_to_binary(bless {}, "Blah"), undef, "to_binary(obj)" );
+is( uuid_to_binary(*STDOUT), undef, "to_binary(*STDOUT)" );
+is( uuid_to_binary(sub { }), undef, "to_binary(sub { })" );
 is( uuid_to_binary(42), undef, "to_binary(IV)" );
 
