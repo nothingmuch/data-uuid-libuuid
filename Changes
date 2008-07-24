@@ -1,0 +1,6 @@
+0.02
+    - Attempt to bail out of Makefile.PL if no <uuid/uuid.h> can be found
+    - simplify overloaded object branch in XS code
+
+0.01
+    - Initial version
