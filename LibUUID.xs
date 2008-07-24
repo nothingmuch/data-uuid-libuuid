@@ -42,7 +42,7 @@ STATIC int sv_to_uuid (SV *sv, uuid_t uuid) {
 
         switch ( len ) {
             case sizeof(uuid_t):
-                uuid_copy(uuid, pv);
+                uuid_copy(uuid, *(uuid_t *)pv);
                 return 1;
             case UUID_STRING_SIZE:
                 if ( uuid_parse(pv, uuid) == 0 )
