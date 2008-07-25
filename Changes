@@ -1,5 +1,7 @@
 0.03
     - hex, base64 support
+    - Data::UUID compat api
+    - improve the makefile bailout logic
 
 0.02
     - Attempt to bail out of Makefile.PL if no <uuid/uuid.h> can be found
