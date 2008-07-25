@@ -90,6 +90,8 @@ STATIC IV hex_to_uuid (uuid_t uuid, char *pv) {
 
 /* hex-string, hex, base64 (TODO), or binary sv to uuid_t */
 STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
+    dSP;
+
     if ( SvPOK(sv) || sv_isobject(sv) ) {
         char *pv;
         STRLEN len;
@@ -105,7 +107,19 @@ STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
             case UUID_HEX_SIZE:
                 return hex_to_uuid(uuid, pv);
             case UUID_BASE64_SIZE:
-                return 0;
+
+                load_module(PERL_LOADMOD_NOIMPORT, newSVpvs("MIME::Base64"), NULL);
+
+                PUSHMARK(SP);
+                XPUSHs(sv);
+                PUTBACK;
+
+                call_pv("MIME::Base64::decode_base64", G_SCALAR);
+
+                SPAGAIN;
+                pv = POPpx;
+
+                /* fall through */
             case sizeof(uuid_t):
                 uuid_copy(uuid, *(uuid_t *)pv);
                 return 1;

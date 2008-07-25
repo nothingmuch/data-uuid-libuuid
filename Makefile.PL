@@ -15,6 +15,7 @@ my $conf = WriteMakefile(
         'Test::use::ok' => 0,
         'Test::More' => 0,
         'Sub::Exporter' => 0,
+        'MIME::Base64' => 0,
     },
 );
 

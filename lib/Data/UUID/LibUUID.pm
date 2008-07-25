@@ -12,7 +12,7 @@ use Sub::Exporter -setup => {
     exports => [qw(
         new_uuid_string new_uuid_binary
         
-        uuid_to_binary uuid_to_string uuid_to_hex
+        uuid_to_binary uuid_to_string uuid_to_hex uuid_to_base64
         
         uuid_eq uuid_compare
 
@@ -38,6 +38,11 @@ eval {
 *new_uuid_bin = \&new_uuid_binary;
 *new_dce_uuid_str = \&new_dce_uuid_string;
 *new_uuid_str = \&new_uuid_string;
+
+sub uuid_to_base64 {
+    require MIME::Base64;
+    MIME::Base64::encode_base64(uuid_to_binary($_[0]));
+}
 
 __PACKAGE__
 
