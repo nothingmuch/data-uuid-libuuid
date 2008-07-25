@@ -40,7 +40,6 @@
 #define dSTRRETBUF  dRETBUFs(char *, UUID_STRING_SIZE)
 #define dHEXRETBUF  dRETBUFz(UUID_HEX_SIZE)
 
-
 /* FIXME uuid_time, uuid_type, uuid_variant are available in libuuid but not in
  * darwin's uuid.h... consider exposing? */
 
