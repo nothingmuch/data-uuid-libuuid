@@ -18,9 +18,27 @@ my $conf = WriteMakefile(
     },
 );
 
-if ( system(join " ", $conf->{CC}, '-c', $conf->{CCFLAGS}, $conf->{INC} || '', "hdr_check.h") != 0 ) {
-    warn "<uuid/uuid.h> seems to be missing, please install e2fsprogs' "
-       . "libuuid, or uuid-dev on debian based linux distributions\n";
+unless ( try_compiling($conf, "hdr_check.h") ) {
+    warn "\n*** ERROR: <uuid/uuid.h> seems to be missing ***\n"
+       . "please install libuuid from e2fsprogs (available as uuid-dev on debian)\n\n";
 
     exit 1;
+}
+
+use File::Spec;
+
+sub try_compiling {
+    my ($conf, $file) = @_;
+
+    my @cc = ( $conf->{CC}, '-c', $conf->{CCFLAGS}, $conf->{INC} || '' );
+
+    if ( -e ( my $devnull = File::Spec->devnull ) ) {
+        push @cc, '-o' => $devnull; # precompiled headers are pretty big
+    }
+
+    my $cmd = join " ", @cc, $file;
+
+    warn "trying $cmd\n";
+
+    return ( system($cmd) == 0 )
 }
