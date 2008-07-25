@@ -227,7 +227,7 @@ uuid_to_hex(sv)
     CODE:
         if ( sv_to_uuid(sv, uuid) ) {
             int i;
-            U8 bits;
+            U8 bits = 0;
             U8 *uuid_ptr = (U8 *)uuid;
             dHEXRETBUF;
 
