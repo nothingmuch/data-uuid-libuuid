@@ -55,7 +55,7 @@ is( uuid_compare(uuid_to_string($bin), $bin), 0, "compare string and binary" );
 my $obj = StringObj->new($str);
 ok( ref $obj, "object" );
 
-is( "$str", $str, "stringifies" );
+is( "$obj", $str, "stringifies" );
 
 ok( uuid_eq($str, $obj), "uuid_eq on stringifying object" );
 
