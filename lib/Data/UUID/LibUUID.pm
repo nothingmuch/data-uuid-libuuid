@@ -45,7 +45,7 @@ Data::UUID::LibUUID - F<uuid.h> based UUID generation (versions 1, 2 and 4)
 
 =head1 SYNOPSIS
 
-	use Data::UUID::LibUUID;
+    use Data::UUID::LibUUID;
 
     my $uuid = new_uuid_string();
 
@@ -128,8 +128,8 @@ Yuval Kogman E<lt>nothingmuch@woobling.orgE<gt>
 
 =head1 COPYRIGHT
 
-	Copyright (c) 2008 Yuval Kogman. All rights reserved
-	This program is free software; you can redistribute
-	it and/or modify it under the same terms as Perl itself.
+    Copyright (c) 2008 Yuval Kogman. All rights reserved
+    This program is free software; you can redistribute
+    it and/or modify it under the same terms as Perl itself.
 
 =cut
