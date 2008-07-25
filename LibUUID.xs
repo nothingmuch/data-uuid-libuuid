@@ -15,7 +15,31 @@
 #define UUID_STRING_SIZE 36
 #define UUID_BASE64_SIZE 25
 
-typedef char uuid_str_buf[UUID_STRING_SIZE + 1];
+
+/* these define RETBUF, which is the PV inside RETVAL preallocated to a certain
+ * size. Avoids the copying of XSRETURN_PVN and teaches me to write more
+ * obfuscated C ;-) */
+
+/* type bufer[size] with SvCUR set to cur */
+#define dRETBUF(type, size, cur) \
+    type RETBUF; \
+    RETVAL = newSV(size); \
+    SvPOK_on(RETVAL); \
+    SvCUR_set(RETVAL, cur); \
+    RETBUF = (type)SvPVX(RETVAL)
+
+/* sizeof(type) buffer with SvCUR set to size */
+#define dRETBUFs(type, size) dRETBUF(type, size, size)
+
+/* null terminated buffer with size + 1 bytes and SvCUR set to size */
+#define dRETBUFz(size) \
+    dRETBUF(char *, size + 1, size); \
+    RETBUF[size + 1] = 0
+
+#define dUUIDRETBUF dRETBUFs(unsigned char *, sizeof(uuid_t))
+#define dSTRRETBUF  dRETBUFs(char *, UUID_STRING_SIZE)
+#define dHEXRETBUF  dRETBUFz(UUID_HEX_SIZE)
+
 
 /* FIXME uuid_time, uuid_type, uuid_variant are available in libuuid but not in
  * darwin's uuid.h... consider exposing? */
@@ -68,7 +92,6 @@ STATIC IV hex_to_uuid (uuid_t uuid, char *pv) {
 STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
     if ( SvPOK(sv) || sv_isobject(sv) ) {
         char *pv;
-        uuid_str_buf buf;
         STRLEN len;
 
         if ( SvPOK(sv) ) {
@@ -134,14 +157,14 @@ SV*
 new_uuid_binary(...)
     PROTOTYPE: ;$
     PREINIT:
-        uuid_t uuid;
         IV version = UUID_TYPE_DCE;
-    PPCODE:
+    CODE:
+        dUUIDRETBUF;
+
         if ( items == 1 ) version = SvIV(ST(0));
 
-        new_uuid(version, uuid);
-
-        XSRETURN_PVN((char *)uuid, sizeof(uuid));
+        new_uuid(version, RETBUF);
+    OUTPUT: RETVAL
 
 SV*
 new_uuid_string(...)
@@ -149,14 +172,14 @@ new_uuid_string(...)
     PREINIT:
         uuid_t uuid;
         IV version = UUID_TYPE_DCE;
-        uuid_str_buf buf;
-    PPCODE:
+    CODE:
+        dSTRRETBUF;
+
         if ( items == 1 ) version = SvIV(ST(0));
 
         new_uuid(version, uuid);
-        uuid_unparse(uuid, buf);
-
-        XSRETURN_PVN(buf, UUID_STRING_SIZE);
+        uuid_unparse(uuid, RETBUF);
+    OUTPUT: RETVAL
 
 SV*
 uuid_to_string(sv)
@@ -164,25 +187,23 @@ uuid_to_string(sv)
     PROTOTYPE: $
     PREINIT:
         uuid_t uuid;
-        uuid_str_buf buf;
-    PPCODE:
+    CODE:
         if ( sv_to_uuid(sv, uuid) ) {
-            uuid_unparse(uuid, buf);
-            XSRETURN_PVN(buf, UUID_STRING_SIZE);
+            dSTRRETBUF;
+            uuid_unparse(uuid, RETBUF);
         } else
             XSRETURN_UNDEF;
+    OUTPUT: RETVAL
 
 SV*
 uuid_to_binary(sv)
     SV *sv
     PROTOTYPE: $
-    PREINIT:
-        uuid_t uuid;
-    PPCODE:
-        if ( sv_to_uuid(sv, uuid) )
-            XSRETURN_PVN((char *)uuid, sizeof(uuid));
-        else
+    CODE:
+        dUUIDRETBUF;
+        if ( !sv_to_uuid(sv, RETBUF) )
             XSRETURN_UNDEF;
+    OUTPUT: RETVAL
 
 SV*
 uuid_to_hex(sv)
@@ -190,39 +211,36 @@ uuid_to_hex(sv)
     PROTOTYPE: $
     PREINIT:
         uuid_t uuid;
-    PPCODE:
+    CODE:
         if ( sv_to_uuid(sv, uuid) ) {
             int i;
             U8 bits;
-            char buf[UUID_HEX_SIZE];
             U8 *uuid_ptr = (U8 *)uuid;
+            dHEXRETBUF;
 
             for (i = 0; i < UUID_HEX_SIZE; i++) {
                 if (i & 1) bits <<= 4;
                 else bits = *uuid_ptr++;
-                buf[i] = PL_hexdigit[(bits >> 4) & 15];
+                RETBUF[i] = PL_hexdigit[(bits >> 4) & 15];
             }
-
-            XSRETURN_PVN(buf, UUID_HEX_SIZE);
-        } else
-            XSRETURN_UNDEF;
+        } else XSRETURN_UNDEF;
+    OUTPUT: RETVAL
 
 SV*
 new_dce_uuid_binary(...)
-    PREINIT:
-        uuid_t uuid;
-    PPCODE:
-        uuid_generate(uuid);
-        XSRETURN_PVN((char *)uuid, sizeof(uuid));
+    CODE:
+        dUUIDRETBUF;
+        uuid_generate(RETBUF);
+    OUTPUT: RETVAL
 
 SV*
 new_dce_uuid_string(...)
     PREINIT:
         uuid_t uuid;
-        uuid_str_buf buf;
-    PPCODE:
+    CODE:
+        dSTRRETBUF;
         uuid_generate(uuid);
-        uuid_unparse(uuid, buf);
-        XSRETURN_PVN(buf, UUID_STRING_SIZE);
+        uuid_unparse(uuid, RETBUF);
+    OUTPUT: RETVAL
 
 
