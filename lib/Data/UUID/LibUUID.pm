@@ -106,6 +106,27 @@ works like the C<cmp> builtin.
 
 Returns undef on non UUID arguments.
 
+=item new_dce_uuid_string
+
+=item new_dce_uuid_binary
+
+These two subroutines are a little hackish in that they take no arguments but
+also do not validate the arguments, so they can be abused as methods:
+
+    package MyFoo;
+
+    use Data::UUID::LibUUID (
+        new_dce_uuid_string => { -as "generate_uuid" },
+    );
+
+    sub yadda {
+        my $self = shift;
+        my $id = $self->generate_uuid;
+    }
+
+This allows the ID generation code to be subclassed, but still keeps the hassle
+down to a minimum. DCE is UUID version two specification.
+
 =back
 
 =head1 TODO
