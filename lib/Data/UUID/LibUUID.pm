@@ -33,6 +33,12 @@ eval {
     bootstrap Data::UUID::LibUUID $VERSION;
 };
 
+# convenient aliases
+*new_dce_uuid_bin = \&new_dce_uuid_binary;
+*new_uuid_bin = \&new_uuid_binary;
+*new_dce_uuid_str = \&new_dce_uuid_string;
+*new_uuid_str = \&new_uuid_string;
+
 __PACKAGE__
 
 __END__
