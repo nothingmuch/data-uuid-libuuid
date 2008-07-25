@@ -71,7 +71,7 @@ uuid_eq(uu1_sv, uu2_sv)
     PREINIT:
         uuid_t uu1;
         uuid_t uu2;
-    CODE:
+    PPCODE:
         if ( sv_to_uuid(uu1_sv, uu1) && sv_to_uuid(uu2_sv, uu2) )
             if ( uuid_compare(uu1, uu2) == 0 )
                 XSRETURN_YES;
@@ -88,7 +88,7 @@ uuid_compare(uu1_sv, uu2_sv)
     PREINIT:
         uuid_t uu1;
         uuid_t uu2;
-    CODE:
+    PPCODE:
         if ( sv_to_uuid(uu1_sv, uu1) && sv_to_uuid(uu2_sv, uu2) )
             XSRETURN_IV(uuid_compare(uu1, uu2));
         else
@@ -100,7 +100,7 @@ new_uuid_binary(...)
     PREINIT:
         uuid_t uuid;
         IV version = UUID_TYPE_DCE;
-    CODE:
+    PPCODE:
         if ( items == 1 ) version = SvIV(ST(0));
 
         new_uuid(version, uuid);
@@ -114,7 +114,7 @@ new_uuid_string(...)
         uuid_t uuid;
         IV version = UUID_TYPE_DCE;
         uuid_str_buf buf;
-    CODE:
+    PPCODE:
         if ( items == 1 ) version = SvIV(ST(0));
 
         new_uuid(version, uuid);
@@ -129,7 +129,7 @@ uuid_to_string(bin)
     PREINIT:
         uuid_t uuid;
         uuid_str_buf buf;
-    CODE:
+    PPCODE:
         if ( sv_to_uuid(bin, uuid) ) {
             uuid_unparse(uuid, buf);
             XSRETURN_PVN(buf, UUID_STRING_SIZE);
@@ -142,7 +142,7 @@ uuid_to_binary(str)
     PROTOTYPE: $
     PREINIT:
         uuid_t uuid;
-    CODE:
+    PPCODE:
         if ( sv_to_uuid(str, uuid) )
             XSRETURN_PVN((char *)uuid, sizeof(uuid));
         else
@@ -152,7 +152,7 @@ SV*
 new_dce_uuid_binary(...)
     PREINIT:
         uuid_t uuid;
-    CODE:
+    PPCODE:
         uuid_generate(uuid);
         XSRETURN_PVN((char *)uuid, sizeof(uuid));
 
@@ -161,7 +161,7 @@ new_dce_uuid_string(...)
     PREINIT:
         uuid_t uuid;
         uuid_str_buf buf;
-    CODE:
+    PPCODE:
         uuid_generate(uuid);
         uuid_unparse(uuid, buf);
         XSRETURN_PVN(buf, UUID_STRING_SIZE);
