@@ -45,3 +45,5 @@
 
 # compiled header
 \.gch$
+
+^bench\.pl$
