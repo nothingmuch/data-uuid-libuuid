@@ -71,3 +71,12 @@ is( uuid_to_binary(42), undef, "to_binary(IV)" );
 
 is( length(new_dce_uuid_string()), 36, 'new_dce_uuid_string ignores its args' );
 is( length(new_dce_uuid_string( bless({}, "Foo"), "foo" )), 36, 'new_dce_uuid_string ignores its args' );
+
+{
+    my $str = uuid_to_string($bin);
+    uuid_eq($str, $bin);
+    $str =~ s/-//g;
+    is( uc $str, uc unpack("H*", $bin), "hex" );
+    isnt( uc $str, uc uuid_to_string($bin), "hex != str");
+    is( join("-", unpack("A8 A4 A4 A4 A*", uc $str) ), uc uuid_to_string($bin), "reformat" );
+}
