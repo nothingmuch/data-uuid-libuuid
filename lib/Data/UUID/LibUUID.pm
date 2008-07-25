@@ -41,7 +41,7 @@ eval {
 
 sub uuid_to_base64 {
     require MIME::Base64;
-    MIME::Base64::encode_base64(uuid_to_binary($_[0]));
+    MIME::Base64::encode_base64(uuid_to_binary($_[0]), '');
 }
 
 __PACKAGE__

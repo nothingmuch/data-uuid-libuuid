@@ -2,7 +2,7 @@
 
 use strict;
 
-use Test::More tests => 42;
+use Test::More tests => 46;
 
 use ok 'Data::UUID::LibUUID' => ":all";
 
@@ -88,7 +88,16 @@ is( length(new_dce_uuid_string( bless({}, "Foo"), "foo" )), 36, 'new_dce_uuid_st
 
     ok( uuid_eq($base64, $bin), "base64 eq bin");
 
-    is( uuid_to_string($base64), uuid_to_string($bin), "same UUID string" );
+    is( uuid_to_string($base64), uuid_to_string($bin), "uuid_to_string(base64)" );
+    is( uuid_to_binary($base64), $bin, "uuid_to_binary(base64)");
 
-    is( uuid_to_base64($bin), $base64, "uuid_to_base64")
+    $base64 =~ s/\s*//g;
+
+    is( uuid_to_base64($bin), $base64, "uuid_to_base64");
+
+    ok( uuid_eq($base64, $bin), "base64 eq bin");
+
+    is( uuid_to_string($base64), uuid_to_string($bin), "uuid_to_string(base64)" );
+    is( uuid_to_binary($base64), $bin, "uuid_to_binary(base64)");
+
 }

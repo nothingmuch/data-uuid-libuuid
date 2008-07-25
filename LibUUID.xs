@@ -13,7 +13,9 @@
 
 #define UUID_HEX_SIZE sizeof(uuid_t) * 2
 #define UUID_STRING_SIZE 36
-#define UUID_BASE64_SIZE 25
+#define UUID_BASE64_SIZE 24
+#define UUID_BASE64_LF_SIZE 25
+#define UUID_BASE64_CRLF_SIZE 26
 
 
 /* these define RETBUF, which is the PV inside RETVAL preallocated to a certain
@@ -106,6 +108,8 @@ STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
             case UUID_HEX_SIZE:
                 return hex_to_uuid(uuid, pv);
             case UUID_BASE64_SIZE:
+            case UUID_BASE64_LF_SIZE:
+            case UUID_BASE64_CRLF_SIZE:
 
                 load_module(PERL_LOADMOD_NOIMPORT, newSVpvs("MIME::Base64"), NULL);
 
