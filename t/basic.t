@@ -73,10 +73,11 @@ is( length(new_dce_uuid_string()), 36, 'new_dce_uuid_string ignores its args' );
 is( length(new_dce_uuid_string( bless({}, "Foo"), "foo" )), 36, 'new_dce_uuid_string ignores its args' );
 
 {
-    my $str = uuid_to_string($bin);
-    uuid_eq($str, $bin);
-    $str =~ s/-//g;
-    is( uc $str, uc unpack("H*", $bin), "hex" );
-    isnt( uc $str, uc uuid_to_string($bin), "hex != str");
-    is( join("-", unpack("A8 A4 A4 A4 A*", uc $str) ), uc uuid_to_string($bin), "reformat" );
+    ( my $hex = uuid_to_string($bin) ) =~ s/-//g;
+    is( uc $hex, uc unpack("H*", $bin), "hex" );
+    is( uc $hex, uc uuid_to_hex($bin), "uuid_to_hex" );
+    isnt( uc $hex, uc uuid_to_string($bin), "hex != str");
+    is( join("-", unpack("A8 A4 A4 A4 A*", uc $hex) ), uc uuid_to_string($bin), "reformat" );
+    is( uuid_to_string($hex), uuid_to_string($bin), "uuid_to_string(hex)" );
 }
+

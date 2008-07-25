@@ -12,7 +12,7 @@ use Sub::Exporter -setup => {
     exports => [qw(
         new_uuid_string new_uuid_binary
         
-        uuid_to_binary uuid_to_string
+        uuid_to_binary uuid_to_string uuid_to_hex
         
         uuid_eq uuid_compare
 

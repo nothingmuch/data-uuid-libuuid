@@ -11,7 +11,9 @@
 #define UUID_TYPE_TIME 1
 #define UUID_TYPE_RANDOM 4
 
+#define UUID_HEX_SIZE sizeof(uuid_t) * 2
 #define UUID_STRING_SIZE 36
+#define UUID_BASE64_SIZE 25
 
 typedef char uuid_str_buf[UUID_STRING_SIZE + 1];
 
@@ -33,10 +35,40 @@ STATIC void new_uuid (IV version, uuid_t uuid) {
     }
 }
 
-/* hex or binary sv to uuid_t */
+STATIC IV hex_to_uuid (uuid_t uuid, char *pv) {
+    int i;
+
+    Zero(uuid, 1, uuid_t);
+
+    /* decode hex */
+    for ( i = 0; i < sizeof(uuid_t); i++ ) {
+        if ( !isALNUM(*pv) )
+            return 0;
+    }
+
+    for ( i = 0; i < sizeof(uuid_t); i++ ) {
+        /* left nybble */
+        if ( isDIGIT(*pv) )
+            uuid[i] |= ( *pv++ << 4 ) & 0xf0;
+        else
+            uuid[i] |= ( (*pv++ + 9) << 4 ) & 0xf0;
+
+        /* right nybble */
+        if ( isDIGIT(*pv) )
+            uuid[i] |= *pv++ & 0xf;
+        else
+            uuid[i] |= (*pv++ + 9) & 0xf;
+
+    }
+
+    return 1;
+}
+
+/* hex-string, hex, base64 (TODO), or binary sv to uuid_t */
 STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
     if ( SvPOK(sv) || sv_isobject(sv) ) {
         char *pv;
+        uuid_str_buf buf;
         STRLEN len;
 
         if ( SvPOK(sv) ) {
@@ -47,6 +79,10 @@ STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
         }
 
         switch ( len ) {
+            case UUID_HEX_SIZE:
+                return hex_to_uuid(uuid, pv);
+            case UUID_BASE64_SIZE:
+                return 0;
             case sizeof(uuid_t):
                 uuid_copy(uuid, *(uuid_t *)pv);
                 return 1;
@@ -123,29 +159,52 @@ new_uuid_string(...)
         XSRETURN_PVN(buf, UUID_STRING_SIZE);
 
 SV*
-uuid_to_string(bin)
-    SV *bin
+uuid_to_string(sv)
+    SV *sv
     PROTOTYPE: $
     PREINIT:
         uuid_t uuid;
         uuid_str_buf buf;
     PPCODE:
-        if ( sv_to_uuid(bin, uuid) ) {
+        if ( sv_to_uuid(sv, uuid) ) {
             uuid_unparse(uuid, buf);
             XSRETURN_PVN(buf, UUID_STRING_SIZE);
         } else
             XSRETURN_UNDEF;
 
 SV*
-uuid_to_binary(str)
-    SV *str
+uuid_to_binary(sv)
+    SV *sv
     PROTOTYPE: $
     PREINIT:
         uuid_t uuid;
     PPCODE:
-        if ( sv_to_uuid(str, uuid) )
+        if ( sv_to_uuid(sv, uuid) )
             XSRETURN_PVN((char *)uuid, sizeof(uuid));
         else
+            XSRETURN_UNDEF;
+
+SV*
+uuid_to_hex(sv)
+    SV *sv
+    PROTOTYPE: $
+    PREINIT:
+        uuid_t uuid;
+    PPCODE:
+        if ( sv_to_uuid(sv, uuid) ) {
+            int i;
+            U8 bits;
+            char buf[UUID_HEX_SIZE];
+            U8 *uuid_ptr = (U8 *)uuid;
+
+            for (i = 0; i < UUID_HEX_SIZE; i++) {
+                if (i & 1) bits <<= 4;
+                else bits = *uuid_ptr++;
+                buf[i] = PL_hexdigit[(bits >> 4) & 15];
+            }
+
+            XSRETURN_PVN(buf, UUID_HEX_SIZE);
+        } else
             XSRETURN_UNDEF;
 
 SV*
