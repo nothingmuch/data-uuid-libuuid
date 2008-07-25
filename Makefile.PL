@@ -23,6 +23,9 @@ unless ( try_compiling($conf, "hdr_check.h") ) {
     warn "\n*** ERROR: <uuid/uuid.h> seems to be missing ***\n"
        . "please install libuuid from e2fsprogs (available as uuid-dev on debian)\n\n";
 
+    # Or CPAN::Reporter reports a failure
+    unlink("Makefile");
+
     exit 1;
 }
 
