@@ -16,6 +16,7 @@ my $conf = WriteMakefile(
         'Test::More' => 0,
         'Sub::Exporter' => 0,
         'MIME::Base64' => 0,
+        'asa' => 0,
     },
 );
 
