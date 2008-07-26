@@ -2,6 +2,8 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#define NEED_load_module
+#define NEED_vload_module
 #define NEED_sv_2pv_flags
 #include "ppport.h"
 
