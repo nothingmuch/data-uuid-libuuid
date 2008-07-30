@@ -122,7 +122,7 @@ STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
                 call_pv("MIME::Base64::decode_base64", G_SCALAR);
 
                 SPAGAIN;
-                pv = POPpx;
+                pv = SvPV_nolen(TOPs);
 
                 /* fall through */
             case sizeof(uuid_t):
