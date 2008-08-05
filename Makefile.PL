@@ -27,7 +27,7 @@ unless ( try_compiling($conf, "hdr_check.h") ) {
     # Or CPAN::Reporter reports a failure
     unlink("Makefile");
 
-    exit 1;
+    exit 0; # not a fail
 }
 
 use File::Spec;
