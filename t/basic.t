@@ -2,7 +2,7 @@
 
 use strict;
 
-use Test::More tests => 46;
+use Test::More tests => 48;
 
 use ok 'Data::UUID::LibUUID' => ":all";
 
@@ -100,4 +100,19 @@ is( length(new_dce_uuid_string( bless({}, "Foo"), "foo" )), 36, 'new_dce_uuid_st
     is( uuid_to_string($base64), uuid_to_string($bin), "uuid_to_string(base64)" );
     is( uuid_to_binary($base64), $bin, "uuid_to_binary(base64)");
 
+}
+
+{
+    my @idents = map { ascending_ident } 1 .. 200;
+
+    is_deeply(
+        [ @idents ],
+        [ sort @idents ],
+        "identifiers are increasing",
+    );
+
+    my %seen;
+    my @uniq = grep { !$seen{$_}++ } map { substr($_, 0, 16) } @idents;
+
+    is( scalar(@uniq), scalar(@idents), "strictly increasing, not just monotonically" );
 }
