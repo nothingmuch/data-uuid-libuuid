@@ -9,8 +9,19 @@
 
 #include <uuid/uuid.h>
 
-#define UUID_TYPE_DCE 2
-#define UUID_TYPE_TIME 1
+#ifndef NO_SRANDDEV_ON_FORK
+#define PID_CHECK pid_check()
+#ifdef PERL_DARWIN
+#include <stdlib.h>
+/* FIXME for older versions of OSX this might need to be sranddev() or srandomdev() */
+#define sranddev() arc4random_stir();
+#endif
+#else
+#define PID_CHECK
+#endif
+
+
+#define UUID_TYPE_TIME 2
 #define UUID_TYPE_RANDOM 4
 
 #define UUID_HEX_SIZE sizeof(uuid_t) * 2
@@ -47,8 +58,19 @@
 /* FIXME uuid_time, uuid_type, uuid_variant are available in libuuid but not in
  * darwin's uuid.h... consider exposing? */
 
+static pid_t last_pid = 0;
+
+inline STATIC void pid_check () {
+    if ( getpid() != last_pid ) {
+        last_pid = getpid();
+        sranddev();
+    }
+}
+
 /* generates a new UUID of a given version */
 STATIC void new_uuid (IV version, uuid_t uuid) {
+    PID_CHECK;
+
     switch (version) {
         case UUID_TYPE_TIME:
             uuid_generate_time(uuid);
@@ -56,8 +78,7 @@ STATIC void new_uuid (IV version, uuid_t uuid) {
         case UUID_TYPE_RANDOM:
             uuid_generate_random(uuid);
             break;
-        case UUID_TYPE_DCE:
-        default:
+        ggdefault:
             uuid_generate(uuid);
     }
 }
@@ -140,6 +161,8 @@ STATIC IV sv_to_uuid (SV *sv, uuid_t uuid) {
 
 MODULE = Data::UUID::LibUUID            PACKAGE = Data::UUID::LibUUID
 PROTOTYPES: ENABLE
+BOOT:
+    last_pid = getpid();
 
 SV*
 uuid_eq(uu1_sv, uu2_sv)
@@ -176,7 +199,7 @@ SV*
 new_uuid_binary(...)
     PROTOTYPE: ;$
     PREINIT:
-        IV version = UUID_TYPE_DCE;
+        IV version = UUID_TYPE_TIME;
     CODE:
         dUUIDRETBUF;
 
@@ -190,7 +213,7 @@ new_uuid_string(...)
     PROTOTYPE: ;$
     PREINIT:
         uuid_t uuid;
-        IV version = UUID_TYPE_DCE;
+        IV version = UUID_TYPE_TIME;
     CODE:
         dSTRRETBUF;
 
@@ -249,6 +272,7 @@ SV*
 new_dce_uuid_binary(...)
     CODE:
         dUUIDRETBUF;
+        PID_CHECK;
         uuid_generate(RETBUF);
     OUTPUT: RETVAL
 
@@ -258,6 +282,7 @@ new_dce_uuid_string(...)
         uuid_t uuid;
     CODE:
         dSTRRETBUF;
+        PID_CHECK;
         uuid_generate(uuid);
         uuid_unparse(uuid, RETBUF);
     OUTPUT: RETVAL
