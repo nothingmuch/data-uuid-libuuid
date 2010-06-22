@@ -1,3 +1,9 @@
+0.05_02
+    - Attempt to reseed only on OSX for now
+
+0.05_01
+    - Attempt to reseed the random number generator at least on OSX
+
 0.04
     - Avoid using the non portable POPpx
 
