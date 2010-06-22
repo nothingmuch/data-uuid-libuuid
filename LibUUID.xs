@@ -9,13 +9,9 @@
 
 #include <uuid/uuid.h>
 
-#ifndef NO_SRANDDEV_ON_FORK
-#define PID_CHECK pid_check()
 #ifdef PERL_DARWIN
+#define PID_CHECK pid_check()
 #include <stdlib.h>
-/* FIXME for older versions of OSX this might need to be sranddev() or srandomdev() */
-#define sranddev() arc4random_stir();
-#endif
 #else
 #define PID_CHECK
 #endif
@@ -63,7 +59,7 @@ static pid_t last_pid = 0;
 inline STATIC void pid_check () {
     if ( getpid() != last_pid ) {
         last_pid = getpid();
-        sranddev();
+        arc4random_stir();
     }
 }
 
