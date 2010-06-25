@@ -1,3 +1,6 @@
+0.05_03
+    - Some platforms don't use time based UUID generation even when asked to
+
 0.05_02
     - Attempt to reseed only on OSX for now
 
