@@ -2,7 +2,7 @@
 
 use strict;
 
-use Test::More tests => 48;
+use Test::More tests => 47;
 
 use ok 'Data::UUID::LibUUID' => ":all";
 
