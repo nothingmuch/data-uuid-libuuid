@@ -1,3 +1,9 @@
+0.05
+    - non dev release
+
+0.05_04
+    - fix broken test plan
+
 0.05_03
     - Some platforms don't use time based UUID generation even when asked to
 
