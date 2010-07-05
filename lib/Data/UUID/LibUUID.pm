@@ -6,7 +6,7 @@ use strict;
 
 use vars qw($VERSION @ISA);
 
-$VERSION = '0.05_04';
+$VERSION = '0.05';
 
 use Time::HiRes ();
 
