@@ -31,6 +31,13 @@ for ( 1 .. 2 ) {
             print new_uuid_string();
             exit;
         }
+        sleep 1; # This makes the test pass, but it scares the bajebus out of me.
+                 # Does that mean there could be collisions if
+                 # new_uuid_string() is called very close in time?
+                 #
+                 # Also the fact that it fails differently gives me the
+                 # impressions that it is a timing issue or what one should
+                 # call it.
     }
 
     push @uuids, new_uuid_string();
