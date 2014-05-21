@@ -6,7 +6,7 @@ use strict;
 
 use vars qw($VERSION @ISA);
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 use Time::HiRes ();
 
@@ -88,7 +88,8 @@ __END__
 
 =head1 NAME
 
-Data::UUID::LibUUID - F<uuid.h> based UUID generation (versions 1, 2 and 4)
+Data::UUID::LibUUID - F<uuid.h> based UUID generation (versions 2 and 4
+depending on platform)
 
 =head1 SYNOPSIS
 
@@ -111,16 +112,21 @@ debian, and also works with the system F<uuid.h> on darwin.
 
 Returns a new UUID in string (dash separated hex) or binary (16 octets) format.
 
-C<$version> can be 1, 2, or 4 and defaults to 2.
+C<$version> can be either 2, or 4 and defaults to whatever the underlying
+implementation prefers.
 
 Version 1 is timestamp/MAC based UUIDs, like L<Data::UUID> provides. They
 reveal time and host information, so they may be considered a security risk.
 
 Version 2 is described here
-L<http://www.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01>
+L<http://www.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01>.
+It is similar to version 1 but considered more secure.
 
 Version 4 is based just on random data. This is not guaranteed to be high
-quality random data.
+quality random data, but usually is supposed to be.
+
+On MacOS X C<getpid> is called before UUID generation, to ensure UUIDs are
+unique accross forks. Behavior on other platforms may vary.
 
 =item uuid_to_binary $str_or_bin
 
