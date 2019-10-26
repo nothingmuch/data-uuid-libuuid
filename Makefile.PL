@@ -18,6 +18,11 @@ my $conf = WriteMakefile(
         'MIME::Base64' => 0,
         'asa' => 0,
     },
+    META_MERGE => {
+        resources => {
+            repository => 'https://github.com/nothingmuch/data-uuid-libuuid.git'
+        },
+    },
 );
 
 unless ( try_compiling($conf, "hdr_check.h") ) {
